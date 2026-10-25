@@ -8,6 +8,12 @@ Web app for **Videoflix**, a small Netflix-style streaming platform. Register wi
 **Live demo:** [videoflix.franekkaminski.dev](https://videoflix.franekkaminski.dev)
 Demo login: `demo@franekkaminski.dev` / `Testpasswort123!` (already activated, no registration needed)
 
+![Video overview with hero and category rows](docs/overview.jpg)
+
+| Info modal | Custom video player |
+| --- | --- |
+| ![Info modal with details and related videos](docs/info-modal.jpg) | ![Custom video player with controls](docs/player.jpg) |
+
 ## Table of Contents
 
 - [Tech Stack](#tech-stack)
