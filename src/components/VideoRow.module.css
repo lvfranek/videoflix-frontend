@@ -1,4 +1,7 @@
 .row {
+  --card-width: clamp(200px, 22vw, 280px);
+  --fade: clamp(32px, 6vw, 96px);
+
   position: relative;
   z-index: 1;
   padding: 0 0 28px;
@@ -11,6 +14,21 @@
   font-weight: 700;
 }
 
+.viewport {
+  position: relative;
+  --fade-left: 0px;
+  --fade-right: 0px;
+}
+
+/* Hidden videos fade out at the edges instead of being cut off */
+.fadeLeft {
+  --fade-left: var(--fade);
+}
+
+.fadeRight {
+  --fade-right: var(--fade);
+}
+
 .list {
   display: flex;
   gap: 12px;
@@ -21,6 +39,13 @@
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--page-padding);
   scrollbar-width: none;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent 100%
+  );
 }
 
 .list::-webkit-scrollbar {
@@ -28,8 +53,46 @@
 }
 
 .list li {
-  flex: 0 0 clamp(200px, 22vw, 280px);
+  flex: 0 0 var(--card-width);
   scroll-snap-align: start;
+}
+
+.arrow {
+  position: absolute;
+  top: 4px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: calc(var(--card-width) * 9 / 16);
+  padding: 0;
+  background: rgb(11 11 12 / 0.55);
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.85;
+  transition:
+    opacity 0.2s,
+    background 0.2s;
+}
+
+.viewport:hover .arrow,
+.arrow:focus-visible {
+  opacity: 1;
+}
+
+.arrow:hover {
+  background: rgb(11 11 12 / 0.8);
+}
+
+.left {
+  left: 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.right {
+  right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
 }
 
 .card {
@@ -75,6 +138,13 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--text);
+}
+
+/* Touch screens swipe, so the arrows only take space there */
+@media (hover: none) {
+  .arrow {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
