@@ -4,7 +4,9 @@ import { Layout } from './components/Layout'
 import { ActivatePage } from './pages/ActivatePage'
 import { ConfirmPasswordPage } from './pages/ConfirmPasswordPage'
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
+import { ImprintPage } from './pages/ImprintPage'
 import { LoginPage } from './pages/LoginPage'
+import { PrivacyPage } from './pages/PrivacyPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { StartPage } from './pages/StartPage'
 import { ToastProvider } from './toast/ToastProvider'
@@ -22,6 +24,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/imprint" element={<ImprintPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             {/* These two paths are fixed by the links in the backend's emails */}
             <Route path="/pages/auth/activate.html" element={<ActivatePage />} />
             <Route path="/pages/auth/confirm_password.html" element={<ConfirmPasswordPage />} />
