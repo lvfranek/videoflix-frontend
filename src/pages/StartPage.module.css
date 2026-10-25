@@ -75,8 +75,17 @@
   white-space: nowrap;
 }
 
+/* Phone: field and button stacked, the field keeps its full height */
 @media (max-width: 520px) {
   .signup {
     flex-direction: column;
+  }
+
+  .signup input {
+    flex: none;
+  }
+
+  .signup :global(.btn) {
+    width: 100%;
   }
 }
