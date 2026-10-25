@@ -1,0 +1,41 @@
+/* Rows start slightly over the hero's faded bottom edge */
+.rows {
+  position: relative;
+  z-index: 1;
+  margin-top: -40px;
+  padding-bottom: 24px;
+}
+
+.loading {
+  min-height: 70vh;
+  background: linear-gradient(0deg, var(--bg), var(--surface));
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.empty {
+  padding: 160px var(--page-padding) 96px;
+}
+
+.empty h1 {
+  margin: 0 0 8px;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.empty p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading {
+    animation: none;
+  }
+}
