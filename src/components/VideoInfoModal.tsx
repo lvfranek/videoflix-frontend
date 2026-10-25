@@ -33,15 +33,17 @@ export function VideoInfoModal({
   const more = videos.filter((other) => other.category === video.category && other.id !== video.id).slice(0, MORE_COUNT)
   const added = new Date(video.created_at).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })
 
+  // No dialog.close() in the cleanup: it fires the close event, and in React's dev mode
+  // (effects run twice) that would report "closed" and remove the modal right away.
+  // Unmounting removes the open dialog anyway.
   useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
-    dialog.showModal()
+    if (!dialog.open) dialog.showModal()
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = previousOverflow
-      dialog.close()
     }
   }, [])
 
