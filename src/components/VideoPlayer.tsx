@@ -244,7 +244,7 @@ export function VideoPlayer({ video, onClose, startAt = 0, onProgress }: PlayerP
 
       {!playing && !waiting && !failed && (
         <button type="button" className={styles.bigPlay} onClick={togglePlay} aria-label="Abspielen">
-          <PlayIcon size={40} />
+          <PlayIcon size={34} />
         </button>
       )}
 

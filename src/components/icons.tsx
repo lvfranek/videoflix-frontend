@@ -22,7 +22,7 @@ const stroke = {
 
 export const PlayIcon = (p: IconProps) => (
   <Svg {...p}>
-    <path d="M7 4.5v15l13-7.5z" fill="currentColor" />
+    <path d="M7 5.2v13.6a1 1 0 0 0 1.53.85l11-6.8a1 1 0 0 0 0-1.7l-11-6.8A1 1 0 0 0 7 5.2z" fill="currentColor" />
   </Svg>
 )
 

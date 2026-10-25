@@ -25,6 +25,7 @@
   position: absolute;
   left: 0;
   right: 0;
+  z-index: 2;
   padding-inline: var(--page-padding);
   transition: opacity 0.3s ease;
 }
@@ -296,26 +297,45 @@
   margin-left: auto;
 }
 
+/* Frosted glass circle; the icon's own shape is optically centered, so no extra offset */
 .bigPlay {
   position: absolute;
   top: 50%;
   left: 50%;
   display: grid;
   place-items: center;
-  width: 88px;
-  height: 88px;
-  padding: 0 0 0 6px;
-  background: rgb(229 9 20 / 0.9);
-  border: 0;
+  width: 84px;
+  height: 84px;
+  padding: 0;
+  background: rgb(255 255 255 / 0.14);
+  border: 1px solid rgb(255 255 255 / 0.35);
   border-radius: 50%;
   color: #fff;
   cursor: pointer;
+  z-index: 2;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
   transform: translate(-50%, -50%);
-  transition: transform 0.15s;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .bigPlay:hover {
+  background: rgb(255 255 255 / 0.24);
+  border-color: rgb(255 255 255 / 0.6);
   transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* Slight darkening while paused, so the button and bars stand out */
+.player:has(.bigPlay)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgb(0 0 0 / 0.25);
+  pointer-events: none;
 }
 
 .spinner {
