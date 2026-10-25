@@ -46,3 +46,14 @@ export function buildRows(videos: Video[], progress: ProgressMap = {}, myList: n
     ...rows,
   ]
 }
+
+/** Videos whose title, description or category contain the search text. */
+export function searchVideos(videos: Video[], query: string) {
+  const needle = query.trim().toLocaleLowerCase('de')
+  if (!needle) return []
+  return videos.filter((video) =>
+    [video.title, video.description, video.category, categoryLabel(video.category)].some((text) =>
+      text.toLocaleLowerCase('de').includes(needle),
+    ),
+  )
+}

@@ -102,3 +102,16 @@ export const CheckIcon = (p: IconProps) => (
     <path d="M5 12.5l4.5 4.5L19 7.5" {...stroke} strokeWidth={2.5} />
   </Svg>
 )
+
+export const SearchIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="6.5" {...stroke} />
+    <path d="M16 16l4.5 4.5" {...stroke} />
+  </Svg>
+)
+
+export const CloseIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M6 6l12 12M18 6L6 18" {...stroke} />
+  </Svg>
+)

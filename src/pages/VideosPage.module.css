@@ -6,6 +6,29 @@
   padding-bottom: 24px;
 }
 
+.search {
+  min-height: 70vh;
+  padding: 120px var(--page-padding) 48px;
+}
+
+.search h1 {
+  margin: 0 0 24px;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: 24px 12px;
+}
+
+.noResults {
+  margin: 0;
+  color: var(--text-muted);
+}
+
 .loading {
   min-height: 70vh;
   background: linear-gradient(0deg, var(--bg), var(--surface));

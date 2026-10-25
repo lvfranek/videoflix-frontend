@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { logout } from '../api/auth'
 import { useToast } from '../toast/ToastContext'
 import styles from './Layout.module.css'
+import { SearchBox } from './SearchBox'
 
 /** Page frame: header floats over the page content, footer with legal links. */
 export function Layout({ loggedIn = false }: { loggedIn?: boolean }) {
@@ -27,9 +28,12 @@ export function Layout({ loggedIn = false }: { loggedIn?: boolean }) {
           VIDEOFLIX
         </Link>
         {loggedIn ? (
-          <button type="button" className={`btn btn-glass ${styles.action}`} onClick={handleLogout}>
-            Abmelden
-          </button>
+          <div className={styles.actions}>
+            <SearchBox />
+            <button type="button" className={`btn btn-glass ${styles.action}`} onClick={handleLogout}>
+              Abmelden
+            </button>
+          </div>
         ) : (
           !onAuthPage && (
             <Link to="/login" className={`btn btn-brand ${styles.action}`}>

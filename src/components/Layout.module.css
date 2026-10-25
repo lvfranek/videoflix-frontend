@@ -18,6 +18,13 @@
   text-decoration: none;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
 .action {
   margin-left: auto;
   height: 38px;

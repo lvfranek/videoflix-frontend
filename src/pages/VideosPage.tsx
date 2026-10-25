@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { getVideos, type Video } from '../api/videos'
 import { Hero } from '../components/Hero'
+import { VideoCard } from '../components/VideoCard'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { VideoRow } from '../components/VideoRow'
-import { buildRows } from '../lib/categories'
+import { buildRows, searchVideos } from '../lib/categories'
 import { useMyList } from '../lib/useMyList'
 import { useWatchProgress } from '../lib/useWatchProgress'
 import { useToast } from '../toast/ToastContext'
@@ -18,6 +20,8 @@ export function VideosPage() {
   const [videos, setVideos] = useState<Video[] | null>(null)
   const [selected, setSelected] = useState<Video | null>(null)
   const [playing, setPlaying] = useState<Playing | null>(null)
+  const [params, setParams] = useSearchParams()
+  const query = params.get('q')?.trim() ?? ''
 
   useEffect(() => {
     getVideos()
@@ -29,6 +33,7 @@ export function VideosPage() {
   }, [showToast])
 
   const rows = useMemo(() => buildRows(videos ?? [], progress, myList), [videos, progress, myList])
+  const results = useMemo(() => searchVideos(videos ?? [], query), [videos, query])
   const featured = selected ?? videos?.[0] ?? null
   const closePlayer = useCallback(() => setPlaying(null), [])
 
@@ -42,6 +47,12 @@ export function VideosPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  /** A search result goes to the hero, the search closes. */
+  function selectResult(video: Video) {
+    setParams({}, { replace: true })
+    handleSelect(video)
+  }
+
   if (videos === null) {
     return <div className={styles.loading} aria-busy="true" aria-label="Videos werden geladen" />
   }
@@ -51,6 +62,42 @@ export function VideosPage() {
       <section className={styles.empty}>
         <h1>Noch keine Videos.</h1>
         <p>Sobald neue Videos hochgeladen sind, findest du sie hier.</p>
+      </section>
+    )
+  }
+
+  const player = playing && (
+    <VideoPlayer
+      video={playing.video}
+      startAt={playing.startAt}
+      onClose={closePlayer}
+      onProgress={(time, duration) => saveProgress(playing.video.id, time, duration)}
+    />
+  )
+
+  if (query) {
+    return (
+      <section className={styles.search}>
+        <h1>
+          {results.length ? `Ergebnisse für „${query}“` : `Keine Treffer für „${query}“`}
+        </h1>
+        {results.length ? (
+          <div className={styles.grid}>
+            {results.map((video) => (
+              <VideoCard
+                key={video.id}
+                video={video}
+                watched={progress[video.id]}
+                inMyList={myList.includes(video.id)}
+                onSelect={selectResult}
+                onToggleMyList={(item) => toggleMyList(item.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className={styles.noResults}>Versuch einen anderen Titel oder eine Kategorie wie „Drama“.</p>
+        )}
+        {player}
       </section>
     )
   }
@@ -79,14 +126,7 @@ export function VideosPage() {
           />
         ))}
       </div>
-      {playing && (
-        <VideoPlayer
-          video={playing.video}
-          startAt={playing.startAt}
-          onClose={closePlayer}
-          onProgress={(time, duration) => saveProgress(playing.video.id, time, duration)}
-        />
-      )}
+      {player}
     </>
   )
 }
