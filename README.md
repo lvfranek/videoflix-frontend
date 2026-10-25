@@ -6,6 +6,7 @@
 Web app for **Videoflix**, a small Netflix-style streaming platform. Register with your email, activate your account via the link in the activation email, then browse videos by category and stream them in 480p, 720p or 1080p.
 
 **Live demo:** [videoflix.franekkaminski.dev](https://videoflix.franekkaminski.dev)
+Demo login: `demo@franekkaminski.dev` / `Testpasswort123!` (already activated, no registration needed)
 
 ## Table of Contents
 
