@@ -18,6 +18,13 @@
   text-decoration: none;
 }
 
+.action {
+  margin-left: auto;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
 .main {
   flex: 1;
   display: flex;

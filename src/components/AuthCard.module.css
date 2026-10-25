@@ -1,0 +1,67 @@
+.page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 640px;
+  padding: 104px var(--page-padding) 48px;
+  background:
+    linear-gradient(0deg, var(--bg) 0%, transparent 35%),
+    radial-gradient(120% 80% at 70% 20%, rgb(138 26 20 / 0.55) 0%, rgb(59 13 11 / 0.6) 45%, var(--bg) 100%);
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  background: rgb(11 11 12 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.06);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+.card h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+.lead {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+}
+
+/* Shared by the forms inside the card */
+.card form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card form :global(.btn) {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.card :global(.links) {
+  margin: 20px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.card :global(.links) a {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.card :global(.links) a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 28px 20px;
+  }
+}

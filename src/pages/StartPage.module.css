@@ -28,3 +28,55 @@
   font-size: 17px;
   color: #d4d4d4;
 }
+
+.signup {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+  max-width: 520px;
+}
+
+.signup input {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  padding: 0 16px;
+  background: rgb(22 22 24 / 0.85);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  outline: none;
+  backdrop-filter: blur(8px);
+}
+
+.signup input:focus {
+  border-color: var(--text-muted);
+}
+
+.signup input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.signup :global(.btn) {
+  height: 52px;
+}
+
+.content .error {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--danger);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .signup {
+    flex-direction: column;
+  }
+}

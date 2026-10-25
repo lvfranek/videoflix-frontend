@@ -1,0 +1,55 @@
+.stack {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(360px, calc(100vw - 32px));
+}
+
+.toast {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.4);
+  animation: slide-in 0.2s ease-out;
+}
+
+.toast p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.labelSuccess,
+.labelError {
+  
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.labelSuccess {
+  color: var(--success);
+}
+
+.labelError {
+  color: var(--danger);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
