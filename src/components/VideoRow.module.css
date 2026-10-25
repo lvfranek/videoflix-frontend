@@ -109,6 +109,7 @@
 
 /* Fixed frame: the image zooms inside it, the red ring stays on the frame */
 .thumb {
+  position: relative;
   display: block;
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -132,6 +133,27 @@
 
 .selected .thumb {
   box-shadow: 0 0 0 2px var(--brand);
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgb(255 255 255 / 0.25);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+}
+
+.remaining {
+  margin-top: -4px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 .title {

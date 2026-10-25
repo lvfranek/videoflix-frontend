@@ -17,20 +17,27 @@ import styles from './VideoPlayer.module.css'
 
 const HIDE_CONTROLS_MS = 2500
 const SKIP_SECONDS = 10
+const SAVE_EVERY_SECONDS = 5
 
 type PlayerProps = {
   video: Video
   onClose: () => void
   /** Where playback should start, e.g. from "Weiterschauen" */
   startAt?: number
+  /** Called every few seconds, on pause and on close with the current position */
+  onProgress?: (time: number, duration: number) => void
 }
 
 /** Full-screen player with custom controls, quality switch and keyboard shortcuts. */
-export function VideoPlayer({ video, onClose, startAt = 0 }: PlayerProps) {
+export function VideoPlayer({ video, onClose, startAt = 0, onProgress }: PlayerProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const resumeAt = useRef(startAt)
   const hideTimer = useRef<number | undefined>(undefined)
+  const lastSaved = useRef(startAt)
+  // Kept outside the <video>, because it is already gone when the player closes
+  const position = useRef({ time: startAt, duration: 0 })
+  const onProgressRef = useRef(onProgress)
 
   const [resolution, setResolution] = useState<Resolution>('720p')
   const [qualityOpen, setQualityOpen] = useState(false)
@@ -107,6 +114,19 @@ export function VideoPlayer({ video, onClose, startAt = 0 }: PlayerProps) {
     }
   }, [])
 
+  useEffect(() => {
+    onProgressRef.current = onProgress
+  })
+
+  /** Reports the position, at most every few seconds unless forced (pause, close). */
+  const reportProgress = useCallback((force = false) => {
+    const { time: current, duration: total } = position.current
+    if (!total) return
+    if (!force && Math.abs(current - lastSaved.current) < SAVE_EVERY_SECONDS) return
+    lastSaved.current = current
+    onProgressRef.current?.(current, total)
+  }, [])
+
   function changeResolution(next: Resolution) {
     resumeAt.current = videoRef.current?.currentTime ?? 0
     setFailed(false)
@@ -160,12 +180,13 @@ export function VideoPlayer({ video, onClose, startAt = 0 }: PlayerProps) {
     document.addEventListener('fullscreenchange', onFullscreen)
     rootRef.current?.focus()
     return () => {
+      reportProgress(true)
       document.body.style.overflow = previousOverflow
       document.removeEventListener('fullscreenchange', onFullscreen)
       window.clearTimeout(hideTimer.current)
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
     }
-  }, [])
+  }, [reportProgress])
 
   const showControls = controlsVisible || !playing || qualityOpen
   const progressStyle = {
@@ -196,12 +217,22 @@ export function VideoPlayer({ video, onClose, startAt = 0 }: PlayerProps) {
           setPlaying(true)
           revealControls()
         }}
-        onPause={() => setPlaying(false)}
+        onPause={() => {
+          setPlaying(false)
+          reportProgress(true)
+        }}
         onWaiting={() => setWaiting(true)}
         onPlaying={() => setWaiting(false)}
         onCanPlay={() => setWaiting(false)}
-        onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
-        onDurationChange={(event) => setDuration(event.currentTarget.duration)}
+        onTimeUpdate={(event) => {
+          position.current.time = event.currentTarget.currentTime
+          setTime(event.currentTarget.currentTime)
+          reportProgress()
+        }}
+        onDurationChange={(event) => {
+          position.current.duration = event.currentTarget.duration
+          setDuration(event.currentTarget.duration)
+        }}
         onProgress={updateBuffered}
         onVolumeChange={(event) => {
           setVolume(event.currentTarget.volume)

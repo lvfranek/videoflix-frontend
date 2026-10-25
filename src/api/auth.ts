@@ -12,7 +12,10 @@ export function activate(uid: string, token: string) {
 }
 
 export function login(email: string, password: string) {
-  return request<{ detail: string }>('login/', { method: 'POST', body: { email, password } })
+  return request<{ detail: string; user: { id: number; username: string } }>('login/', {
+    method: 'POST',
+    body: { email, password },
+  })
 }
 
 export function logout() {

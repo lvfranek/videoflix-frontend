@@ -4,14 +4,18 @@ import { Hero } from '../components/Hero'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { VideoRow } from '../components/VideoRow'
 import { buildRows } from '../lib/categories'
+import { useWatchProgress } from '../lib/useWatchProgress'
 import { useToast } from '../toast/ToastContext'
 import styles from './VideosPage.module.css'
 
+type Playing = { video: Video; startAt: number }
+
 export function VideosPage() {
   const showToast = useToast()
+  const { progress, saveProgress } = useWatchProgress()
   const [videos, setVideos] = useState<Video[] | null>(null)
   const [selected, setSelected] = useState<Video | null>(null)
-  const [playing, setPlaying] = useState<Video | null>(null)
+  const [playing, setPlaying] = useState<Playing | null>(null)
 
   useEffect(() => {
     getVideos()
@@ -22,9 +26,14 @@ export function VideosPage() {
       })
   }, [showToast])
 
-  const rows = useMemo(() => buildRows(videos ?? []), [videos])
+  const rows = useMemo(() => buildRows(videos ?? [], progress), [videos, progress])
   const featured = selected ?? videos?.[0] ?? null
   const closePlayer = useCallback(() => setPlaying(null), [])
+
+  /** Starts a video where it was left, or from the beginning. */
+  function play(video: Video) {
+    setPlaying({ video, startAt: progress[video.id]?.time ?? 0 })
+  }
 
   function handleSelect(video: Video) {
     setSelected(video)
@@ -46,13 +55,27 @@ export function VideosPage() {
 
   return (
     <>
-      <Hero key={featured.id} video={featured} onPlay={() => setPlaying(featured)} />
+      <Hero key={featured.id} video={featured} watched={progress[featured.id]} onPlay={() => play(featured)} />
       <div className={styles.rows}>
         {rows.map((row) => (
-          <VideoRow key={row.title} row={row} selectedId={featured.id} onSelect={handleSelect} />
+          <VideoRow
+            key={row.title}
+            row={row}
+            selectedId={featured.id}
+            progress={progress}
+            // In "Weiterschauen" a click continues right away, elsewhere it shows the video in the hero
+            onSelect={row.resume ? play : handleSelect}
+          />
         ))}
       </div>
-      {playing && <VideoPlayer video={playing} onClose={closePlayer} />}
+      {playing && (
+        <VideoPlayer
+          video={playing.video}
+          startAt={playing.startAt}
+          onClose={closePlayer}
+          onProgress={(time, duration) => saveProgress(playing.video.id, time, duration)}
+        />
+      )}
     </>
   )
 }

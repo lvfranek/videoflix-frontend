@@ -4,6 +4,7 @@ import { login } from '../api/auth'
 import { ApiError } from '../api/client'
 import { AuthCard } from '../components/AuthCard'
 import { Field } from '../components/Field'
+import { setCurrentUser } from '../lib/storage'
 import { useForm } from '../lib/useForm'
 import { validateEmail, validateRequired, type Errors } from '../lib/validation'
 import { useToast } from '../toast/ToastContext'
@@ -34,7 +35,8 @@ export function LoginPage() {
 
     setPending(true)
     try {
-      await login(values.email.trim(), values.password)
+      const { user } = await login(values.email.trim(), values.password)
+      setCurrentUser(user.id)
       navigate('/videos')
     } catch (error) {
       const message =

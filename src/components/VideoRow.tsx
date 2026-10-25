@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Video } from '../api/videos'
 import type { VideoRow as Row } from '../lib/categories'
+import type { ProgressMap } from '../lib/useWatchProgress'
 import { BackIcon, ChevronRightIcon } from './icons'
 import styles from './VideoRow.module.css'
 
 type VideoRowProps = {
   row: Row
   selectedId?: number
+  progress: ProgressMap
   onSelect: (video: Video) => void
 }
 
 /** One horizontally scrolling row with arrows and faded edges where more videos are hidden. */
-export function VideoRow({ row, selectedId, onSelect }: VideoRowProps) {
+export function VideoRow({ row, selectedId, progress, onSelect }: VideoRowProps) {
   const listRef = useRef<HTMLUListElement>(null)
   const [canLeft, setCanLeft] = useState(false)
   const [canRight, setCanRight] = useState(false)
@@ -53,21 +55,34 @@ export function VideoRow({ row, selectedId, onSelect }: VideoRowProps) {
           </button>
         )}
         <ul ref={listRef} className={styles.list} onScroll={updateEdges}>
-          {row.videos.map((video) => (
-            <li key={video.id}>
-              <button
-                type="button"
-                className={video.id === selectedId ? `${styles.card} ${styles.selected}` : styles.card}
-                onClick={() => onSelect(video)}
-                aria-pressed={video.id === selectedId}
-              >
-                <span className={styles.thumb}>
-                  <img src={video.thumbnail_url} alt="" loading="lazy" />
-                </span>
-                <span className={styles.title}>{video.title}</span>
-              </button>
-            </li>
-          ))}
+          {row.videos.map((video) => {
+            const watched = progress[video.id]
+            return (
+              <li key={video.id}>
+                <button
+                  type="button"
+                  className={video.id === selectedId ? `${styles.card} ${styles.selected}` : styles.card}
+                  onClick={() => onSelect(video)}
+                  aria-pressed={video.id === selectedId}
+                >
+                  <span className={styles.thumb}>
+                    <img src={video.thumbnail_url} alt="" loading="lazy" />
+                    {watched && (
+                      <span className={styles.progress} aria-hidden="true">
+                        <span style={{ width: `${(watched.time / watched.duration) * 100}%` }} />
+                      </span>
+                    )}
+                  </span>
+                  <span className={styles.title}>{video.title}</span>
+                  {row.resume && watched && (
+                    <span className={styles.remaining}>
+                      Noch {Math.max(1, Math.round((watched.duration - watched.time) / 60))} Min.
+                    </span>
+                  )}
+                </button>
+              </li>
+            )
+          })}
         </ul>
         {canRight && (
           <button type="button" className={`${styles.arrow} ${styles.right}`} onClick={() => scrollByPage(1)} aria-label="Weiterblättern">
