@@ -22,7 +22,9 @@ export function VideoRow({ row, selectedId, onSelect }: VideoRowProps) {
               onClick={() => onSelect(video)}
               aria-pressed={video.id === selectedId}
             >
-              <img src={video.thumbnail_url} alt="" loading="lazy" />
+              <span className={styles.thumb}>
+                <img src={video.thumbnail_url} alt="" loading="lazy" />
+              </span>
               <span className={styles.title}>{video.title}</span>
             </button>
           </li>

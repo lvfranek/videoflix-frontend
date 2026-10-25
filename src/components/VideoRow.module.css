@@ -44,25 +44,31 @@
   cursor: pointer;
 }
 
-.card img {
-  width: 100%;
+/* Fixed frame: the image zooms inside it, the red ring stays on the frame */
+.thumb {
+  display: block;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  overflow: hidden;
   border-radius: var(--radius);
   background: var(--surface);
-  transition:
-    transform 0.2s ease,
-    outline-color 0.2s;
-  outline: 2px solid transparent;
-  outline-offset: 2px;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.2s;
 }
 
-.card:hover img {
-  transform: scale(1.03);
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.selected img {
-  outline-color: var(--brand);
+.card:hover .thumb img {
+  transform: scale(1.05);
+}
+
+.selected .thumb {
+  box-shadow: 0 0 0 2px var(--brand);
 }
 
 .title {
@@ -72,11 +78,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card img {
+  .thumb img {
     transition: none;
   }
 
-  .card:hover img {
+  .card:hover .thumb img {
     transform: none;
   }
 }
