@@ -18,6 +18,7 @@ Demo login: `demo@franekkaminski.dev` / `Testpasswort123!` (already activated, n
 - [Project Structure](#project-structure)
 - [Authentication](#authentication)
 - [Video Streaming](#video-streaming)
+- [Saved Data in the Browser](#saved-data-in-the-browser)
 - [Deployment](#deployment)
 - [License](#license)
 
@@ -27,6 +28,7 @@ Demo login: `demo@franekkaminski.dev` / `Testpasswort123!` (already activated, n
 - `Vite` as dev server and build tool
 - `React Router` for client-side routing, the video page is lazy-loaded
 - `hls.js` for HLS streaming (native HLS on Safari and iOS)
+- `localStorage` for continue watching and my list, stored per user
 - CSS Modules with design tokens as CSS custom properties (no UI framework)
 - `Oxlint` for linting
 - Self-hosted font via `@fontsource` (Inter)
@@ -36,9 +38,13 @@ Demo login: `demo@franekkaminski.dev` / `Testpasswort123!` (already activated, n
 - Start page with a quick sign-up field that pre-fills the registration form
 - Registration with email activation, login, logout and password reset by email
 - Client-side validation and readable messages for every backend error
-- Hero with the featured video and a muted 480p preview that fades in over the thumbnail
-- "Neu auf Videoflix" row (last 5 days) and one row per category, scrollable sideways
-- Full-screen player with a 480p / 720p / 1080p switch that keeps the playback position
+- Hero with the newest video and a muted 480p preview that fades in over the thumbnail
+- Rows for "Weiterschauen", "Meine Liste", "Neu auf Videoflix" (last 5 days) and every category, with scroll arrows and faded edges
+- **Custom video player**: play/pause, seek bar with buffered range, ±10 s, volume, quality menu (480p / 720p / 1080p, keeps the position), fullscreen, auto-hiding controls and YouTube-style shortcuts (`Space`/`K`, `←`/`→`, `↑`/`↓`, `F`, `M`, `Esc`)
+- **Continue watching**: the playback position is saved per user, started videos get a progress bar and resume where they stopped
+- **My list**: save videos with a +/check button
+- **Live search** in the header over title, description and category, kept in the URL (`?q=`)
+- **Info modal** (native `<dialog>`) with details, play / my list buttons and more videos from the same category
 - Loading, empty and error states
 - Imprint and privacy policy
 - Responsive down to phone width, keyboard accessible, reduced-motion support
@@ -83,8 +89,10 @@ Create a `.env.local` to override the value on your machine.
 ```
 src/
 ├── api/           # fetch wrapper with token refresh, auth and video endpoints
-├── components/    # Layout, AuthCard, Field, Hero, VideoRow, VideoPlayer
-├── lib/           # validation, form hook, categories, HLS hook
+├── components/    # Layout, AuthCard, Field, Hero, VideoRow, VideoCard,
+│                  # VideoPlayer, VideoInfoModal, SearchBox, icons
+├── lib/           # validation, form hook, categories and search, HLS hook,
+│                  # watch progress and my list (localStorage)
 ├── pages/         # one component per route
 ├── toast/         # toast notifications (context + provider)
 ├── App.tsx        # routes
@@ -98,7 +106,7 @@ src/
 | `/register`, `/login`, `/forgot-password` | Authentication |
 | `/pages/auth/activate.html` | Account activation (link from the email) |
 | `/pages/auth/confirm_password.html` | New password (link from the email) |
-| `/videos` | Hero, category rows and player |
+| `/videos` | Hero, rows, info modal and player; `/videos?q=...` shows search results |
 | `/imprint`, `/privacy` | Legal pages |
 
 The two `/pages/auth/...html` paths match the links the backend puts into its emails, so the backend works unchanged.
@@ -110,6 +118,10 @@ The backend sets the JWT access token and refresh token as **HttpOnly cookies**.
 ## Video Streaming
 
 Videos are streamed as HLS from `video/<id>/<resolution>/index.m3u8`. `useHls` uses `hls.js` with `withCredentials`, so the auth cookie is sent with every playlist and segment request. Browsers with native HLS support (Safari, iOS) play the playlist directly. When the quality is switched, the player remembers the current time and continues there.
+
+## Saved Data in the Browser
+
+The backend has no endpoints for watch history or a watchlist, so both live in `localStorage` under a key that contains the user id from the login response (`videoflix:progress:<id>`, `videoflix:my-list:<id>`). Several accounts on one browser keep separate data. Every access is wrapped in `try/catch`, so the app keeps working when storage is blocked.
 
 ## Deployment
 
