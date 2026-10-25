@@ -18,13 +18,17 @@ export function categoryLabel(category: string) {
 export type VideoRow = { title: string; videos: Video[]; resume?: boolean }
 
 /**
- * "Weiterschauen" (started videos, last watched first), "Neu auf Videoflix"
- * (last 5 days, like the original app) and one row per category.
+ * "Weiterschauen" (started videos, last watched first), "Meine Liste",
+ * "Neu auf Videoflix" (last 5 days, like the original app) and one row per category.
  */
-export function buildRows(videos: Video[], progress: ProgressMap = {}): VideoRow[] {
+export function buildRows(videos: Video[], progress: ProgressMap = {}, myList: number[] = []): VideoRow[] {
   const started = videos
     .filter((video) => progress[video.id])
     .sort((a, b) => progress[b.id].updatedAt - progress[a.id].updatedAt)
+
+  const saved = myList
+    .map((id) => videos.find((video) => video.id === id))
+    .filter((video): video is Video => Boolean(video))
 
   const since = Date.now() - NEW_DAYS * DAY_MS
   const fresh = videos.filter((video) => new Date(video.created_at).getTime() >= since)
@@ -37,6 +41,7 @@ export function buildRows(videos: Video[], progress: ProgressMap = {}): VideoRow
   const rows = [...byCategory].map(([category, list]) => ({ title: categoryLabel(category), videos: list }))
   return [
     ...(started.length ? [{ title: 'Weiterschauen', videos: started, resume: true }] : []),
+    ...(saved.length ? [{ title: 'Meine Liste', videos: saved }] : []),
     ...(fresh.length ? [{ title: 'Neu auf Videoflix', videos: fresh }] : []),
     ...rows,
   ]

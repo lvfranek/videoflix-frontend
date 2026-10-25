@@ -4,6 +4,7 @@ import { Hero } from '../components/Hero'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { VideoRow } from '../components/VideoRow'
 import { buildRows } from '../lib/categories'
+import { useMyList } from '../lib/useMyList'
 import { useWatchProgress } from '../lib/useWatchProgress'
 import { useToast } from '../toast/ToastContext'
 import styles from './VideosPage.module.css'
@@ -13,6 +14,7 @@ type Playing = { video: Video; startAt: number }
 export function VideosPage() {
   const showToast = useToast()
   const { progress, saveProgress } = useWatchProgress()
+  const { myList, toggleMyList } = useMyList()
   const [videos, setVideos] = useState<Video[] | null>(null)
   const [selected, setSelected] = useState<Video | null>(null)
   const [playing, setPlaying] = useState<Playing | null>(null)
@@ -26,7 +28,7 @@ export function VideosPage() {
       })
   }, [showToast])
 
-  const rows = useMemo(() => buildRows(videos ?? [], progress), [videos, progress])
+  const rows = useMemo(() => buildRows(videos ?? [], progress, myList), [videos, progress, myList])
   const featured = selected ?? videos?.[0] ?? null
   const closePlayer = useCallback(() => setPlaying(null), [])
 
@@ -55,7 +57,14 @@ export function VideosPage() {
 
   return (
     <>
-      <Hero key={featured.id} video={featured} watched={progress[featured.id]} onPlay={() => play(featured)} />
+      <Hero
+        key={featured.id}
+        video={featured}
+        watched={progress[featured.id]}
+        inMyList={myList.includes(featured.id)}
+        onPlay={() => play(featured)}
+        onToggleMyList={() => toggleMyList(featured.id)}
+      />
       <div className={styles.rows}>
         {rows.map((row) => (
           <VideoRow
@@ -63,6 +72,8 @@ export function VideosPage() {
             row={row}
             selectedId={featured.id}
             progress={progress}
+            myList={myList}
+            onToggleMyList={(video) => toggleMyList(video.id)}
             // In "Weiterschauen" a click continues right away, elsewhere it shows the video in the hero
             onSelect={row.resume ? play : handleSelect}
           />

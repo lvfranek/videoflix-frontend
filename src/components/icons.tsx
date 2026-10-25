@@ -90,3 +90,15 @@ export const ExitFullscreenIcon = (p: IconProps) => (
     <path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5" {...stroke} />
   </Svg>
 )
+
+export const PlusIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 5v14M5 12h14" {...stroke} strokeWidth={2.5} />
+  </Svg>
+)
+
+export const CheckIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M5 12.5l4.5 4.5L19 7.5" {...stroke} strokeWidth={2.5} />
+  </Svg>
+)

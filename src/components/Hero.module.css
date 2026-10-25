@@ -71,6 +71,12 @@
   color: #d4d4d4;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .resume {
   display: flex;
   align-items: center;

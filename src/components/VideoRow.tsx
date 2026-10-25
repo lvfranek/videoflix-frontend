@@ -2,18 +2,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Video } from '../api/videos'
 import type { VideoRow as Row } from '../lib/categories'
 import type { ProgressMap } from '../lib/useWatchProgress'
-import { BackIcon, ChevronRightIcon } from './icons'
+import { BackIcon, CheckIcon, ChevronRightIcon, PlusIcon } from './icons'
 import styles from './VideoRow.module.css'
 
 type VideoRowProps = {
   row: Row
   selectedId?: number
   progress: ProgressMap
+  myList: number[]
   onSelect: (video: Video) => void
+  onToggleMyList: (video: Video) => void
 }
 
 /** One horizontally scrolling row with arrows and faded edges where more videos are hidden. */
-export function VideoRow({ row, selectedId, progress, onSelect }: VideoRowProps) {
+export function VideoRow({ row, selectedId, progress, myList, onSelect, onToggleMyList }: VideoRowProps) {
   const listRef = useRef<HTMLUListElement>(null)
   const [canLeft, setCanLeft] = useState(false)
   const [canRight, setCanRight] = useState(false)
@@ -57,8 +59,9 @@ export function VideoRow({ row, selectedId, progress, onSelect }: VideoRowProps)
         <ul ref={listRef} className={styles.list} onScroll={updateEdges}>
           {row.videos.map((video) => {
             const watched = progress[video.id]
+            const saved = myList.includes(video.id)
             return (
-              <li key={video.id}>
+              <li key={video.id} className={styles.item}>
                 <button
                   type="button"
                   className={video.id === selectedId ? `${styles.card} ${styles.selected}` : styles.card}
@@ -79,6 +82,15 @@ export function VideoRow({ row, selectedId, progress, onSelect }: VideoRowProps)
                       Noch {Math.max(1, Math.round((watched.duration - watched.time) / 60))} Min.
                     </span>
                   )}
+                </button>
+                <button
+                  type="button"
+                  className={saved ? `${styles.listButton} ${styles.inList}` : styles.listButton}
+                  onClick={() => onToggleMyList(video)}
+                  aria-pressed={saved}
+                  aria-label={saved ? `${video.title} aus Meiner Liste entfernen` : `${video.title} zu Meiner Liste hinzufügen`}
+                >
+                  {saved ? <CheckIcon size={18} /> : <PlusIcon size={18} />}
                 </button>
               </li>
             )
