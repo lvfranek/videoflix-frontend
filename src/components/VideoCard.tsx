@@ -5,7 +5,6 @@ import styles from './VideoCard.module.css'
 
 type VideoCardProps = {
   video: Video
-  selected?: boolean
   watched?: Progress
   showRemaining?: boolean
   inMyList: boolean
@@ -16,7 +15,6 @@ type VideoCardProps = {
 /** Thumbnail card with progress bar and a +/check button for "Meine Liste". */
 export function VideoCard({
   video,
-  selected = false,
   watched,
   showRemaining = false,
   inMyList,
@@ -27,9 +25,8 @@ export function VideoCard({
     <div className={styles.item}>
       <button
         type="button"
-        className={selected ? `${styles.card} ${styles.selected}` : styles.card}
+        className={styles.card}
         onClick={() => onSelect(video)}
-        aria-pressed={selected}
       >
         <span className={styles.thumb}>
           <img src={video.thumbnail_url} alt="" loading="lazy" />

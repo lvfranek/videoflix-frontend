@@ -115,3 +115,10 @@ export const CloseIcon = (p: IconProps) => (
     <path d="M6 6l12 12M18 6L6 18" {...stroke} />
   </Svg>
 )
+
+export const InfoIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" {...stroke} />
+    <path d="M12 11v6M12 7.5v.5" {...stroke} strokeWidth={2.5} />
+  </Svg>
+)

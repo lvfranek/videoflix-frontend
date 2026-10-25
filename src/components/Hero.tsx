@@ -3,7 +3,7 @@ import { getStreamUrl, type Video } from '../api/videos'
 import { categoryLabel } from '../lib/categories'
 import type { Progress } from '../lib/useWatchProgress'
 import { useHls } from '../lib/useHls'
-import { CheckIcon, PlayIcon, PlusIcon } from './icons'
+import { CheckIcon, InfoIcon, PlayIcon, PlusIcon } from './icons'
 import styles from './Hero.module.css'
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -15,10 +15,11 @@ type HeroProps = {
   inMyList: boolean
   onPlay: () => void
   onToggleMyList: () => void
+  onInfo: () => void
 }
 
 /** Featured video: thumbnail first, then a muted preview in 480p fades in. */
-export function Hero({ video, watched, inMyList, onPlay, onToggleMyList }: HeroProps) {
+export function Hero({ video, watched, inMyList, onPlay, onToggleMyList, onInfo }: HeroProps) {
   const previewRef = useRef<HTMLVideoElement>(null)
   const [reduced] = useState(prefersReducedMotion)
   const [previewing, setPreviewing] = useState<number | null>(null)
@@ -61,6 +62,10 @@ export function Hero({ video, watched, inMyList, onPlay, onToggleMyList }: HeroP
           <button type="button" className="btn btn-glass" onClick={onToggleMyList} aria-pressed={inMyList}>
             {inMyList ? <CheckIcon size={18} /> : <PlusIcon size={18} />}
             Meine Liste
+          </button>
+          <button type="button" className="btn btn-glass" onClick={onInfo}>
+            <InfoIcon size={18} />
+            Mehr Infos
           </button>
         </div>
         {watched && (

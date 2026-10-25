@@ -8,7 +8,6 @@ import styles from './VideoRow.module.css'
 
 type VideoRowProps = {
   row: Row
-  selectedId?: number
   progress: ProgressMap
   myList: number[]
   onSelect: (video: Video) => void
@@ -16,7 +15,7 @@ type VideoRowProps = {
 }
 
 /** One horizontally scrolling row with arrows and faded edges where more videos are hidden. */
-export function VideoRow({ row, selectedId, progress, myList, onSelect, onToggleMyList }: VideoRowProps) {
+export function VideoRow({ row, progress, myList, onSelect, onToggleMyList }: VideoRowProps) {
   const listRef = useRef<HTMLUListElement>(null)
   const [canLeft, setCanLeft] = useState(false)
   const [canRight, setCanRight] = useState(false)
@@ -67,7 +66,6 @@ export function VideoRow({ row, selectedId, progress, myList, onSelect, onToggle
             <li key={video.id}>
               <VideoCard
                 video={video}
-                selected={video.id === selectedId}
                 watched={progress[video.id]}
                 showRemaining={row.resume}
                 inMyList={myList.includes(video.id)}

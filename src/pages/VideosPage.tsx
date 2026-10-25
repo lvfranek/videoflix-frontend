@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { getVideos, type Video } from '../api/videos'
 import { Hero } from '../components/Hero'
 import { VideoCard } from '../components/VideoCard'
+import { VideoInfoModal } from '../components/VideoInfoModal'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { VideoRow } from '../components/VideoRow'
 import { buildRows, searchVideos } from '../lib/categories'
@@ -18,9 +19,9 @@ export function VideosPage() {
   const { progress, saveProgress } = useWatchProgress()
   const { myList, toggleMyList } = useMyList()
   const [videos, setVideos] = useState<Video[] | null>(null)
-  const [selected, setSelected] = useState<Video | null>(null)
+  const [info, setInfo] = useState<Video | null>(null)
   const [playing, setPlaying] = useState<Playing | null>(null)
-  const [params, setParams] = useSearchParams()
+  const [params] = useSearchParams()
   const query = params.get('q')?.trim() ?? ''
 
   useEffect(() => {
@@ -34,23 +35,15 @@ export function VideosPage() {
 
   const rows = useMemo(() => buildRows(videos ?? [], progress, myList), [videos, progress, myList])
   const results = useMemo(() => searchVideos(videos ?? [], query), [videos, query])
-  const featured = selected ?? videos?.[0] ?? null
+  const featured = videos?.[0] ?? null
   const closePlayer = useCallback(() => setPlaying(null), [])
+  const closeInfo = useCallback(() => setInfo(null), [])
+  const toggle = useCallback((video: Video) => toggleMyList(video.id), [toggleMyList])
 
   /** Starts a video where it was left, or from the beginning. */
   function play(video: Video) {
+    setInfo(null)
     setPlaying({ video, startAt: progress[video.id]?.time ?? 0 })
-  }
-
-  function handleSelect(video: Video) {
-    setSelected(video)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  /** A search result goes to the hero, the search closes. */
-  function selectResult(video: Video) {
-    setParams({}, { replace: true })
-    handleSelect(video)
   }
 
   if (videos === null) {
@@ -66,21 +59,35 @@ export function VideosPage() {
     )
   }
 
-  const player = playing && (
-    <VideoPlayer
-      video={playing.video}
-      startAt={playing.startAt}
-      onClose={closePlayer}
-      onProgress={(time, duration) => saveProgress(playing.video.id, time, duration)}
-    />
+  const overlays = (
+    <>
+      {info && (
+        <VideoInfoModal
+          video={info}
+          videos={videos}
+          watched={progress[info.id]}
+          inMyList={myList.includes(info.id)}
+          onPlay={play}
+          onToggleMyList={toggle}
+          onShow={setInfo}
+          onClose={closeInfo}
+        />
+      )}
+      {playing && (
+        <VideoPlayer
+          video={playing.video}
+          startAt={playing.startAt}
+          onClose={closePlayer}
+          onProgress={(time, duration) => saveProgress(playing.video.id, time, duration)}
+        />
+      )}
+    </>
   )
 
   if (query) {
     return (
       <section className={styles.search}>
-        <h1>
-          {results.length ? `Ergebnisse für „${query}“` : `Keine Treffer für „${query}“`}
-        </h1>
+        <h1>{results.length ? `Ergebnisse für „${query}“` : `Keine Treffer für „${query}“`}</h1>
         {results.length ? (
           <div className={styles.grid}>
             {results.map((video) => (
@@ -89,15 +96,15 @@ export function VideosPage() {
                 video={video}
                 watched={progress[video.id]}
                 inMyList={myList.includes(video.id)}
-                onSelect={selectResult}
-                onToggleMyList={(item) => toggleMyList(item.id)}
+                onSelect={setInfo}
+                onToggleMyList={toggle}
               />
             ))}
           </div>
         ) : (
           <p className={styles.noResults}>Versuch einen anderen Titel oder eine Kategorie wie „Drama“.</p>
         )}
-        {player}
+        {overlays}
       </section>
     )
   }
@@ -110,23 +117,23 @@ export function VideosPage() {
         watched={progress[featured.id]}
         inMyList={myList.includes(featured.id)}
         onPlay={() => play(featured)}
-        onToggleMyList={() => toggleMyList(featured.id)}
+        onToggleMyList={() => toggle(featured)}
+        onInfo={() => setInfo(featured)}
       />
       <div className={styles.rows}>
         {rows.map((row) => (
           <VideoRow
             key={row.title}
             row={row}
-            selectedId={featured.id}
             progress={progress}
             myList={myList}
-            onToggleMyList={(video) => toggleMyList(video.id)}
-            // In "Weiterschauen" a click continues right away, elsewhere it shows the video in the hero
-            onSelect={row.resume ? play : handleSelect}
+            onToggleMyList={toggle}
+            // In "Weiterschauen" a click continues right away, elsewhere it opens the details
+            onSelect={row.resume ? play : setInfo}
           />
         ))}
       </div>
-      {player}
+      {overlays}
     </>
   )
 }

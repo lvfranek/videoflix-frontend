@@ -14,7 +14,7 @@
   cursor: pointer;
 }
 
-/* Fixed frame: the image zooms inside it, the red ring stays on the frame */
+/* Fixed frame: the image zooms inside it */
 .thumb {
   position: relative;
   display: block;
@@ -22,8 +22,6 @@
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: 0 0 0 2px transparent;
-  transition: box-shadow 0.2s;
 }
 
 .thumb img {
@@ -36,10 +34,6 @@
 
 .card:hover .thumb img {
   transform: scale(1.05);
-}
-
-.selected .thumb {
-  box-shadow: 0 0 0 2px var(--brand);
 }
 
 .progress {
